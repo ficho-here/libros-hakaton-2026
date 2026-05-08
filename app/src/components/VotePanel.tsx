@@ -43,14 +43,14 @@ export function VotePanel({
   }
 
   return (
-    <section className="rounded-lg border border-slate-800 bg-panel p-6">
+    <section className="rounded-sm border border-[#42515a]/45 border-l-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <h2 className="text-xl font-black text-white">Cast your vote</h2>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         {poll.options.map((option, index) => (
           <label
             key={option}
-            className={`flex cursor-pointer items-center gap-3 rounded-md border bg-slate-950 px-4 py-4 text-left font-bold text-white transition hover:border-neon ${
-              selectedOption === index ? "border-neon" : "border-slate-700"
+            className={`flex cursor-pointer items-center gap-3 rounded-sm border bg-[#10171b] px-4 py-4 text-left font-bold text-white transition hover:border-neon hover:bg-neon/10 ${
+              selectedOption === index ? "border-neon bg-neon/10" : "border-[#42515a]/45"
             }`}
           >
             <input
@@ -71,7 +71,7 @@ export function VotePanel({
         type="button"
         onClick={handleVote}
         disabled={selectedOption === null}
-        className="mt-5 rounded-md bg-neon px-5 py-3 text-sm font-black text-white transition hover:bg-[#d32a31] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-5 rounded-sm bg-neon px-5 py-3 text-sm font-black uppercase tracking-wide text-white shadow-[0_14px_32px_rgba(183,32,38,0.22)] transition hover:bg-[#d32a31] disabled:cursor-not-allowed disabled:opacity-60"
       >
         Vote
       </button>

@@ -10,13 +10,19 @@
 
 body {
   min-height: 100vh;
-  background: #080a12;
+  background:
+    linear-gradient(135deg, #101416 0%, #172027 45%, #0d1113 100%);
   color: #f8fafc;
 }
 
 .wallet-adapter-button {
-  border-radius: 8px !important;
-  background: #4ade80 !important;
-  color: #06110a !important;
+  border-radius: 6px !important;
+  background: #b72026 !important;
+  color: #ffffff !important;
   font-weight: 800 !important;
+}
+
+::selection {
+  background: #b72026;
+  color: #ffffff;
 }

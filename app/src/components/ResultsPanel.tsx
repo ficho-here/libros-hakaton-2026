@@ -14,7 +14,7 @@ export function ResultsPanel({
   const totalVotes = poll.totalVotes.toNumber();
 
   return (
-    <section className="rounded-lg border border-slate-800 bg-panel p-6">
+    <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-black text-white">Results</h2>
@@ -22,7 +22,7 @@ export function ResultsPanel({
         </div>
         <button
           onClick={onRefresh}
-          className="rounded-md border border-slate-700 px-4 py-2 text-sm font-bold text-white hover:border-neon"
+          className="rounded-sm border border-[#42515a]/60 bg-[#10171b] px-4 py-2 text-sm font-bold text-white transition hover:border-neon hover:bg-neon/10"
         >
           Refresh
         </button>
@@ -34,14 +34,14 @@ export function ResultsPanel({
           const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
 
           return (
-            <div key={option}>
+            <div key={option} className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-3">
               <div className="flex justify-between gap-3 text-sm">
                 <span className="font-bold text-white">{option}</span>
                 <span className="text-slate-300">
                   {count} votes · {percent}%
                 </span>
               </div>
-              <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-900">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#42515a]/35">
                 <div className="h-full bg-neon" style={{ width: `${percent}%` }} />
               </div>
             </div>
@@ -49,11 +49,11 @@ export function ResultsPanel({
         })}
       </div>
 
-      <h3 className="mt-8 text-sm font-black uppercase tracking-wide text-trophy">Voter wallets</h3>
+      <h3 className="mt-8 text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Voter wallets</h3>
       <div className="mt-3 space-y-2">
         {votes.length === 0 && <p className="text-sm text-slate-400">No votes yet.</p>}
         {votes.map((vote) => (
-          <div key={vote.publicKey} className="rounded-md bg-slate-950 p-3 text-sm">
+          <div key={vote.publicKey} className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-3 text-sm">
             <p className="break-all text-slate-200">{vote.voter.toBase58()}</p>
             <p className="mt-1 text-slate-400">
               Voted for: {poll.options[vote.optionIndex] ?? `Option ${vote.optionIndex}`}

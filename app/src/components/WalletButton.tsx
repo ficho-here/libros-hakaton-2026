@@ -132,7 +132,7 @@ function WalletButton() {
 
   if (isCheckingProvider) {
     return (
-      <div className="h-10 w-36 animate-pulse rounded-md border border-slate-800 bg-slate-900" />
+      <div className="h-10 w-36 animate-pulse rounded-sm border border-[#42515a]/40 bg-[#10171b]" />
     );
   }
 
@@ -143,7 +143,7 @@ function WalletButton() {
           href="https://phantom.app/"
           target="_blank"
           rel="noreferrer"
-          className="rounded-md border border-amber-400/60 px-4 py-2 text-sm font-bold text-amber-200 transition hover:border-amber-300 hover:text-amber-100"
+          className="rounded-sm border border-neon/70 bg-neon/10 px-4 py-2 text-sm font-black text-white transition hover:bg-neon"
         >
           Install Phantom
         </a>
@@ -158,14 +158,14 @@ function WalletButton() {
     return (
       <div className="flex flex-col items-start gap-2 sm:items-end">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-semibold text-slate-100">
+          <span className="rounded-sm border border-[#42515a]/60 bg-[#10171b] px-3 py-2 text-sm font-black text-slate-100">
             {shortenAddress(publicKey)}
           </span>
           <button
             type="button"
             onClick={disconnectWallet}
             disabled={isLoading}
-            className="rounded-md border border-slate-700 px-3 py-2 text-sm font-bold text-slate-200 transition hover:border-rose-400 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-sm border border-[#42515a]/60 px-3 py-2 text-sm font-bold text-slate-200 transition hover:border-neon hover:bg-neon/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? "Disconnecting..." : "Disconnect"}
           </button>
@@ -181,7 +181,7 @@ function WalletButton() {
         type="button"
         onClick={connectWallet}
         disabled={isLoading}
-        className="rounded-md bg-neon px-4 py-2 text-sm font-black text-white transition hover:bg-[#d32a31] disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-sm bg-neon px-4 py-2 text-sm font-black text-white shadow-[0_10px_25px_rgba(183,32,38,0.24)] transition hover:bg-[#d32a31] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? "Connecting..." : "Connect Phantom"}
       </button>

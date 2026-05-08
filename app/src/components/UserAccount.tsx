@@ -167,13 +167,13 @@ export default function UserAccount() {
 
   if (!account.walletAddress) {
     return (
-      <section className="rounded-lg border border-slate-800 bg-panel p-6">
+      <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="text-sm font-black uppercase tracking-wide text-trophy">User Account</p>
+          <div className="border-l-4 border-neon pl-3">
+            <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
             <h2 className="mt-2 text-2xl font-black text-white">Connect wallet</h2>
           </div>
-          <span className="w-fit rounded-md border border-[#42515a] px-3 py-2 text-sm font-black text-slate-300">
+          <span className="w-fit rounded-sm border border-[#42515a] px-3 py-2 text-sm font-black text-slate-300">
             Disconnected
           </span>
         </div>
@@ -183,51 +183,51 @@ export default function UserAccount() {
   }
 
   return (
-    <section className="rounded-lg border border-slate-800 bg-panel p-6">
+    <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-sm font-black uppercase tracking-wide text-trophy">User Account</p>
+        <div className="border-l-4 border-neon pl-3">
+          <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
           <h2 className="mt-2 text-2xl font-black text-white">
             {account.username || "Unnamed voter"}
           </h2>
           <p className="mt-2 text-sm text-slate-300">Wallet connected</p>
         </div>
-        <span className="w-fit rounded-md bg-neon px-3 py-2 text-sm font-black text-white">
+        <span className="w-fit rounded-sm bg-neon px-3 py-2 text-sm font-black text-white">
           Connected
         </span>
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2">
-        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-4">
           <p className="text-sm font-bold text-slate-400">Wallet address</p>
           <p className="mt-2 break-all text-sm font-semibold text-white">{account.walletAddress}</p>
         </div>
-        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-4">
           <p className="text-sm font-bold text-slate-400">Short address</p>
           <p className="mt-2 text-sm font-semibold text-white">
             {shortenAddress(account.walletAddress)}
           </p>
         </div>
-        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-4">
           <p className="text-sm font-bold text-slate-400">Username</p>
           <p className="mt-2 text-sm font-semibold text-white">
             {account.username || "No username saved yet"}
           </p>
         </div>
-        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-4">
           <p className="text-sm font-bold text-slate-400">Wallet status</p>
           <p className="mt-2 text-sm font-semibold text-white">Connected</p>
         </div>
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-md border border-[#42515a] bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a] bg-[#10171b] p-4">
           <p className="text-3xl font-black text-white">{account.localPollsCount}</p>
           <p className="mt-1 text-sm text-slate-400">
             {account.localPollsCount > 0 ? "Local preview polls" : "No local polls yet"}
           </p>
         </div>
-        <div className="rounded-md border border-[#42515a] bg-slate-950 p-4">
+        <div className="rounded-sm border border-[#42515a] bg-[#10171b] p-4">
           <p className="text-3xl font-black text-white">{account.localVotesCount}</p>
           <p className="mt-1 text-sm text-slate-400">
             {account.localVotesCount > 0 ? "Local preview votes" : "No local votes yet"}

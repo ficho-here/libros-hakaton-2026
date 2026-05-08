@@ -16,28 +16,32 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen bg-arena text-slate-100 antialiased">
         <WalletProviders>
           <div className="flex min-h-screen flex-col">
-            <header className="border-b border-slate-800/90 bg-arena/95">
-              <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+            <header className="border-b border-[#42515a]/40 bg-[#0f1417]/95 shadow-[0_18px_40px_rgba(0,0,0,0.22)]">
+              <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:gap-8">
-                  <Link href="/" className="text-xl font-black tracking-tight text-white">
-                    GOTY ChainVote
+                  <Link href="/" className="flex items-center gap-3 text-xl font-black tracking-tight text-white">
+                    <span className="h-9 w-2 rounded-sm bg-neon" />
+                    <span>GOTY ChainVote</span>
                   </Link>
-                  <nav aria-label="Main navigation" className="flex items-center gap-2">
+                  <nav
+                    aria-label="Main navigation"
+                    className="flex w-fit flex-wrap items-center gap-1 rounded-md border border-[#42515a]/40 bg-panel/80 p-1"
+                  >
                     <Link
                       href="/"
-                      className="rounded-md px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                      className="rounded-sm px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-[#42515a]/30 hover:text-white"
                     >
                       Home
                     </Link>
                     <Link
                       href="/create"
-                      className="rounded-md px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                      className="rounded-sm px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-[#42515a]/30 hover:text-white"
                     >
                       Create Poll
                     </Link>
                     <Link
                       href="/account"
-                      className="rounded-md px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-slate-900 hover:text-white"
+                      className="rounded-sm px-3 py-2 text-sm font-bold text-slate-300 transition hover:bg-[#42515a]/30 hover:text-white"
                     >
                       Account
                     </Link>
@@ -49,8 +53,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
             <main className="flex-1">{children}</main>
 
-            <footer className="border-t border-slate-800/90">
-              <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-5 py-5 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <footer className="border-t border-[#42515a]/40 bg-[#0b0f12]/80">
+              <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-5 py-5 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
                 <span>Solana Devnet voting demo</span>
                 <span>Built for hackathon iteration</span>
               </div>

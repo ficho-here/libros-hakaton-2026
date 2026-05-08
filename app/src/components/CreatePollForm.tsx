@@ -34,7 +34,10 @@ export function CreatePollForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-slate-800 bg-panel p-6">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
+    >
       <label className="block text-sm font-bold text-slate-200" htmlFor="title">
         Poll title
       </label>
@@ -42,17 +45,17 @@ export function CreatePollForm() {
         id="title"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        className="mt-2 w-full rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-neon"
+        className="mt-2 w-full rounded-sm border border-[#42515a]/45 bg-[#10171b] px-4 py-3 text-white outline-none transition focus:border-neon"
         maxLength={80}
       />
 
-      <div className="mt-6 flex items-center justify-between gap-4">
-        <h2 className="text-sm font-bold text-slate-200">Game options</h2>
+      <div className="mt-6 flex items-center justify-between gap-4 border-t border-[#42515a]/35 pt-5">
+        <h2 className="text-sm font-black uppercase tracking-wide text-slate-300">Game options</h2>
         <button
           type="button"
           onClick={() => setOptions((current) => [...current, ""])}
           disabled={options.length >= 10}
-          className="rounded-md bg-slate-800 px-3 py-2 text-sm font-bold text-white disabled:opacity-50"
+          className="rounded-sm border border-[#42515a]/60 bg-[#10171b] px-3 py-2 text-sm font-bold text-white transition hover:border-neon disabled:opacity-50"
         >
           Add option
         </button>
@@ -68,14 +71,14 @@ export function CreatePollForm() {
                 next[index] = event.target.value;
                 setOptions(next);
               }}
-              className="w-full rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-neon"
+              className="w-full rounded-sm border border-[#42515a]/45 bg-[#10171b] px-4 py-3 text-white outline-none transition focus:border-neon"
               maxLength={40}
             />
             <button
               type="button"
               onClick={() => setOptions((current) => current.filter((_, optionIndex) => optionIndex !== index))}
               disabled={options.length <= 2}
-              className="rounded-md border border-slate-700 px-3 py-2 text-sm font-bold text-slate-200 disabled:opacity-50"
+              className="rounded-sm border border-[#42515a]/60 px-3 py-2 text-sm font-bold text-slate-200 transition hover:border-neon disabled:opacity-50"
             >
               Remove
             </button>
@@ -85,7 +88,7 @@ export function CreatePollForm() {
 
       <button
         type="submit"
-        className="mt-6 w-full rounded-md bg-neon px-4 py-3 font-black text-slate-950"
+        className="mt-6 w-full rounded-sm bg-neon px-4 py-3 font-black uppercase tracking-wide text-white shadow-[0_14px_32px_rgba(183,32,38,0.22)] transition hover:bg-[#d32a31]"
       >
         Create poll on Solana
       </button>

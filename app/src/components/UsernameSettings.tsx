@@ -96,8 +96,8 @@ export function UsernameSettings() {
   }
 
   return (
-    <section className="rounded-lg border border-slate-800 bg-panel p-5">
-      <h2 className="text-lg font-black text-white">Username</h2>
+    <section className="rounded-sm border border-[#42515a]/45 bg-panel p-5 shadow-[0_18px_50px_rgba(0,0,0,0.14)]">
+      <h2 className="border-l-4 border-neon pl-3 text-lg font-black text-white">Username</h2>
       {!walletAddress ? (
         <p className="mt-3 text-sm text-slate-300">
           Connect Phantom wallet before changing your username.
@@ -118,13 +118,13 @@ export function UsernameSettings() {
                 setUsername(event.target.value);
                 setSavedMessage("");
               }}
-              className="w-full rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-neon"
+              className="w-full rounded-sm border border-[#42515a]/45 bg-[#10171b] px-4 py-3 text-white outline-none transition focus:border-neon"
               maxLength={32}
               placeholder="Your display name"
             />
             <button
               type="submit"
-              className="rounded-md bg-neon px-4 py-3 text-sm font-black text-white transition hover:bg-[#d32a31]"
+              className="rounded-sm bg-neon px-4 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-[#d32a31]"
             >
               Save
             </button>
@@ -135,4 +135,3 @@ export function UsernameSettings() {
     </section>
   );
 }
-
