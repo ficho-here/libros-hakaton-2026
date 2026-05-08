@@ -167,7 +167,7 @@ export default function UserAccount() {
 
   if (!account.walletAddress) {
     return (
-      <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+      <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div className="border-l-4 border-neon pl-3">
             <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
@@ -183,7 +183,7 @@ export default function UserAccount() {
   }
 
   return (
-    <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+    <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="border-l-4 border-neon pl-3">
           <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
@@ -197,7 +197,7 @@ export default function UserAccount() {
         </span>
       </div>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+      <div className="motion-stagger mt-6 grid gap-3 md:grid-cols-2">
         <div className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-4">
           <p className="text-sm font-bold text-slate-400">Wallet address</p>
           <p className="mt-2 break-all text-sm font-semibold text-white">{account.walletAddress}</p>
@@ -220,7 +220,7 @@ export default function UserAccount() {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="motion-stagger mt-5 grid gap-3 sm:grid-cols-2">
         <div className="rounded-sm border border-[#42515a] bg-[#10171b] p-4">
           <p className="text-3xl font-black text-white">{account.localPollsCount}</p>
           <p className="mt-1 text-sm text-slate-400">

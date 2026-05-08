@@ -43,9 +43,9 @@ export function VotePanel({
   }
 
   return (
-    <section className="rounded-sm border border-[#42515a]/45 border-l-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+    <section className="motion-panel rounded-sm border border-[#42515a]/45 border-l-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <h2 className="text-xl font-black text-white">Cast your vote</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="motion-stagger mt-4 grid gap-3 sm:grid-cols-2">
         {poll.options.map((option, index) => (
           <label
             key={option}

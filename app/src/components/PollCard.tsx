@@ -23,12 +23,12 @@ function getStatusClasses(status: Poll["status"]): string {
 
 function PollCard({ poll }: { poll: Poll }) {
   return (
-    <article className="relative flex h-full flex-col justify-between overflow-hidden rounded-sm border border-[#42515a]/45 bg-panel p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:border-neon/80">
+    <article className="motion-panel glass-panel group relative flex h-full flex-col justify-between overflow-hidden rounded-sm border border-[#42515a]/45 p-5 transition hover:-translate-y-1 hover:border-neon/80 hover:shadow-[0_28px_80px_rgba(0,0,0,0.34)]">
       <div className="absolute inset-x-0 top-0 h-1 bg-neon" />
       <div className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-xl font-black leading-snug text-white">{poll.title}</h2>
+            <h2 className="text-xl font-black leading-snug text-white transition group-hover:text-red-100">{poll.title}</h2>
             <p className="mt-2 text-sm text-slate-400">
               By {shortenAddress(poll.author)} on {formatDate(poll.createdAt)}
             </p>
@@ -47,7 +47,7 @@ function PollCard({ poll }: { poll: Poll }) {
             const percentage = poll.totalVotes > 0 ? Math.round((option.votes / poll.totalVotes) * 100) : 0;
 
             return (
-              <div key={option.id} className="rounded-sm border border-[#42515a]/35 bg-[#10171b] p-3">
+              <div key={option.id} className="rounded-sm border border-[#42515a]/35 bg-[#10171b]/80 p-3">
                 <div className="flex items-center justify-between gap-3 text-sm">
                   <span className="font-semibold text-slate-200">{option.label}</span>
                   <span className="shrink-0 text-slate-400">
@@ -56,7 +56,7 @@ function PollCard({ poll }: { poll: Poll }) {
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#42515a]/35">
                   <div
-                    className="h-full rounded-full bg-neon transition-all"
+                    className="motion-progress h-full rounded-full bg-neon"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>

@@ -36,7 +36,7 @@ export function CreatePollForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
+      className="motion-panel rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
     >
       <label className="block text-sm font-bold text-slate-200" htmlFor="title">
         Poll title
@@ -61,7 +61,7 @@ export function CreatePollForm() {
         </button>
       </div>
 
-      <div className="mt-3 space-y-3">
+      <div className="motion-stagger mt-3 space-y-3">
         {options.map((option, index) => (
           <div key={index} className="flex gap-2">
             <input
@@ -93,9 +93,9 @@ export function CreatePollForm() {
         Create poll on Solana
       </button>
 
-      {status && <p className="mt-4 break-all text-sm text-slate-300">{status}</p>}
+      {status && <p className="motion-status mt-4 break-all text-sm text-slate-300">{status}</p>}
       {createdPoll && (
-        <a href={`/poll/${createdPoll}`} className="mt-3 inline-block text-sm font-bold text-neon">
+        <a href={`/poll/${createdPoll}`} className="motion-status mt-3 inline-block text-sm font-bold text-neon">
           Open created poll
         </a>
       )}

@@ -323,7 +323,7 @@ export default function PollDetailsPage({
   return (
     <main className="min-h-screen bg-arena">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-8 sm:px-8">
-        <header className="flex flex-col gap-4 border-b border-[#42515a]/40 pb-6 sm:flex-row sm:items-start sm:justify-between">
+        <header className="motion-fade-up flex flex-col gap-4 border-b border-[#42515a]/40 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="border-l-4 border-neon pl-4">
             <Link href="/" className="text-sm font-bold text-neon">
               Back to polls
@@ -338,9 +338,9 @@ export default function PollDetailsPage({
 
         <UsernameSettings />
 
-        {status && <p className="rounded-sm border border-[#42515a]/45 bg-panel p-5 text-slate-300">{status}</p>}
+        {status && <p className="motion-status rounded-sm border border-[#42515a]/45 bg-panel p-5 text-slate-300">{status}</p>}
         {showManualFallback && (
-          <section className="rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+          <section className="motion-panel rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
             <div className="border-l-4 border-neon pl-3">
               <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Local preview</p>
               <h2 className="mt-1 text-2xl font-black text-white">Enter poll data manually</h2>
@@ -367,7 +367,7 @@ export default function PollDetailsPage({
                 />
               </div>
 
-              <div className="space-y-3">
+              <div className="motion-stagger space-y-3">
                 {localOptions.map((option, index) => (
                   <div key={index}>
                     <label className="block text-sm font-bold text-slate-200" htmlFor={`local-option-${index}`}>
@@ -411,13 +411,13 @@ export default function PollDetailsPage({
                 </button>
               </div>
 
-              {localFormStatus && <p className="text-sm text-slate-300">{localFormStatus}</p>}
+              {localFormStatus && <p className="motion-status text-sm text-slate-300">{localFormStatus}</p>}
             </form>
           </section>
         )}
 
         {localPoll && (
-          <section className="rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
+          <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="border-l-4 border-neon pl-3">
                 <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Local preview</p>
@@ -431,7 +431,7 @@ export default function PollDetailsPage({
               </p>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <div className="motion-stagger mt-5 grid gap-3 sm:grid-cols-2">
               {localPoll.options.map((option, index) => {
                 const count = localPoll.voteCounts[index] ?? 0;
                 const percent = localPoll.totalVotes === 0 ? 0 : Math.round((count / localPoll.totalVotes) * 100);
@@ -461,7 +461,7 @@ export default function PollDetailsPage({
                       <span>{percent}%</span>
                     </div>
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#42515a]/35">
-                      <div className="h-full bg-neon" style={{ width: `${percent}%` }} />
+                      <div className="motion-progress h-full bg-neon" style={{ width: `${percent}%` }} />
                     </div>
                   </label>
                 );
@@ -476,7 +476,7 @@ export default function PollDetailsPage({
             >
               Vote
             </button>
-            {localVoteStatus && <p className="mt-4 text-sm text-slate-300">{localVoteStatus}</p>}
+            {localVoteStatus && <p className="motion-status mt-4 text-sm text-slate-300">{localVoteStatus}</p>}
           </section>
         )}
 

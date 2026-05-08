@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "npm --prefix app run dev",
+    "build": "npm --prefix app run build",
+    "start": "npm --prefix app run start",
+    "lint": "npm --prefix app run lint",
     "test": "anchor test",
     "test:anchor": "ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
   },
