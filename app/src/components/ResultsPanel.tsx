@@ -30,7 +30,7 @@ export function ResultsPanel({
 
       <div className="motion-stagger mt-5 space-y-4">
         {poll.options.map((option, index) => {
-          const count = poll.voteCounts[index]?.toNumber() ?? 0;
+          const count = poll.votes[index]?.toNumber() ?? 0;
           const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
 
           return (

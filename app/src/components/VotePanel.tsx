@@ -27,18 +27,18 @@ export function VotePanel({
     }
 
     if (!wallet.publicKey) {
-      setStatus("Connect Phantom before voting.");
+      setStatus("Please connect Phantom wallet first.");
       return;
     }
 
     try {
-      setStatus("Sending vote transaction...");
+      setStatus("Sending vote transaction to Devnet...");
       const signature = await vote(pollPublicKey, selectedOption);
       setStatus(`Vote recorded forever. Transaction: ${signature}`);
       await onVoted();
     } catch (error) {
       const message = error instanceof Error ? error.message : "Vote failed.";
-      setStatus(message.includes("already in use") ? "This wallet already voted in this poll." : message);
+      setStatus(message.includes("already in use") ? "This wallet has already voted in this poll." : message);
     }
   }
 

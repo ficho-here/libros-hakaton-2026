@@ -1,4 +1,4 @@
-# GOTY ChainVote Frontend
+# Libros Frontend
 
 Next.js app for the Solana Devnet Game of the Year voting dApp.
 

@@ -19,15 +19,15 @@ export function CreatePollForm() {
     setCreatedPoll("");
 
     if (!wallet.publicKey) {
-      setStatus("Connect Phantom before creating a poll.");
+      setStatus("Please connect Phantom wallet first.");
       return;
     }
 
     try {
-      setStatus("Sending poll creation transaction...");
+      setStatus("Sending poll creation transaction to Devnet...");
       const result = await createPoll(title, options);
       setCreatedPoll(result.pollPda.toBase58());
-      setStatus(`Poll created. Transaction: ${result.signature}`);
+      setStatus(`Poll created on-chain. Transaction: ${result.signature}`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not create poll.");
     }
@@ -90,7 +90,7 @@ export function CreatePollForm() {
         type="submit"
         className="mt-6 w-full rounded-sm bg-neon px-4 py-3 font-black uppercase tracking-wide text-white shadow-[0_14px_32px_rgba(183,32,38,0.22)] transition hover:bg-[#d32a31]"
       >
-        Create poll on Solana
+        Create poll on Solana Devnet
       </button>
 
       {status && <p className="motion-status mt-4 break-all text-sm text-slate-300">{status}</p>}

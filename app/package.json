@@ -1,5 +1,5 @@
 {
-  "name": "goty-chainvote-app",
+  "name": "libros-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,5 +29,8 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5"
+  },
+  "overrides": {
+    "@types/react": "^18.3.2"
   }
 }

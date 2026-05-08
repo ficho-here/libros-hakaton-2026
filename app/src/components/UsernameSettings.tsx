@@ -1,41 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { shortenAddress } from "@/utils/constants";
-
-type PhantomPublicKey = {
-  toString: () => string;
-  toBase58?: () => string;
-};
-
-type PhantomProviderLike = {
-  publicKey?: PhantomPublicKey | null;
-  on?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-  removeListener?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-};
-
-function getPhantomProvider(): PhantomProviderLike | undefined {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  return (window as Window & { solana?: PhantomProviderLike }).solana;
-}
-
-function publicKeyToString(publicKey?: PhantomPublicKey | null): string {
-  if (!publicKey) {
-    return "";
-  }
-
-  return publicKey.toBase58?.() ?? publicKey.toString();
-}
 
 function getUsernameStorageKey(walletAddress: string): string {
   return `chainvote:username:${walletAddress}`;
@@ -43,38 +10,13 @@ function getUsernameStorageKey(walletAddress: string): string {
 
 export function UsernameSettings() {
   const wallet = useWallet();
-  const [walletAddress, setWalletAddress] = useState("");
+  const walletAddress = useMemo(() => wallet.publicKey?.toBase58() ?? "", [wallet.publicKey]);
   const [username, setUsername] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
 
   useEffect(() => {
-    const provider = getPhantomProvider();
-    const adapterAddress = wallet.publicKey?.toBase58() ?? "";
-    const providerAddress = publicKeyToString(provider?.publicKey);
-    setWalletAddress(adapterAddress || providerAddress);
+    setSavedMessage("");
 
-    const handleWalletChange = (publicKey?: PhantomPublicKey | null) => {
-      setWalletAddress(publicKeyToString(publicKey));
-      setSavedMessage("");
-    };
-
-    const handleDisconnect = () => {
-      setWalletAddress("");
-      setSavedMessage("");
-    };
-
-    provider?.on?.("connect", handleWalletChange);
-    provider?.on?.("accountChanged", handleWalletChange);
-    provider?.on?.("disconnect", handleDisconnect);
-
-    return () => {
-      provider?.removeListener?.("connect", handleWalletChange);
-      provider?.removeListener?.("accountChanged", handleWalletChange);
-      provider?.removeListener?.("disconnect", handleDisconnect);
-    };
-  }, [wallet.publicKey]);
-
-  useEffect(() => {
     if (!walletAddress) {
       setUsername("");
       return;
@@ -87,7 +29,7 @@ export function UsernameSettings() {
     event.preventDefault();
 
     if (!walletAddress) {
-      setSavedMessage("Connect Phantom wallet before changing your username.");
+      setSavedMessage("Please connect Phantom wallet first.");
       return;
     }
 
@@ -100,7 +42,7 @@ export function UsernameSettings() {
       <h2 className="border-l-4 border-neon pl-3 text-lg font-black text-white">Username</h2>
       {!walletAddress ? (
         <p className="mt-3 text-sm text-slate-300">
-          Connect Phantom wallet before changing your username.
+          Please connect Phantom wallet first.
         </p>
       ) : (
         <form onSubmit={handleSaveUsername} className="mt-4 space-y-3">

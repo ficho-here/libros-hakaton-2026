@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { PublicKey } from "@solana/web3.js";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { UsernameSettings } from "@/components/UsernameSettings";
@@ -19,23 +19,6 @@ type LocalPollData = {
   totalVotes: number;
 };
 
-type PhantomPublicKey = {
-  toString: () => string;
-  toBase58?: () => string;
-};
-
-type PhantomProviderLike = {
-  publicKey?: PhantomPublicKey | null;
-  on?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-  removeListener?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-};
-
 type LocalPollVoteState = {
   voteCounts: number[];
   totalVotes: number;
@@ -47,22 +30,6 @@ type LocalVoteRecord = {
   optionIndex: number;
   updatedAt: string;
 };
-
-function getPhantomProvider(): PhantomProviderLike | undefined {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  return (window as Window & { solana?: PhantomProviderLike }).solana;
-}
-
-function publicKeyToString(publicKey?: PhantomPublicKey | null): string {
-  if (!publicKey) {
-    return "";
-  }
-
-  return publicKey.toBase58?.() ?? publicKey.toString();
-}
 
 function safeParseJson<T>(value: string | null): T | null {
   if (!value) {
@@ -117,6 +84,7 @@ export default function PollDetailsPage({
 }) {
   const wallet = useWallet();
   const pollPublicKey = useMemo(() => new PublicKey(params.id), [params.id]);
+  const pollPublicKeyAddress = useMemo(() => pollPublicKey.toBase58(), [pollPublicKey]);
   const { fetchPoll, fetchVotesForPoll } = useVotingProgram();
   const [poll, setPoll] = useState<PollAccount | null>(null);
   const [votes, setVotes] = useState<VoteAccount[]>([]);
@@ -127,10 +95,11 @@ export default function PollDetailsPage({
   const [localPoll, setLocalPoll] = useState<LocalPollData | null>(null);
   const [localSelectedOption, setLocalSelectedOption] = useState<number | null>(null);
   const [localVoteStatus, setLocalVoteStatus] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
+  const walletAddress = useMemo(() => wallet.publicKey?.toBase58() ?? "", [wallet.publicKey]);
   const isLocalSource = searchParams?.source === "local";
+  const localPollOptionsCount = localPoll?.options.length ?? 0;
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     if (isLocalSource) {
       const mockPoll = mockPolls.find((currentPoll) => currentPoll.id === params.id);
 
@@ -175,47 +144,27 @@ export default function PollDetailsPage({
       setVotes([]);
       setStatus("Could not load this poll. Check the poll address, program ID, and copied IDL.");
     }
-  }
+  }, [fetchPoll, fetchVotesForPoll, isLocalSource, params.id, pollPublicKey]);
 
   useEffect(() => {
     refresh();
-  }, [pollPublicKey.toBase58(), isLocalSource]);
+  }, [refresh, pollPublicKeyAddress]);
 
   useEffect(() => {
-    const provider = getPhantomProvider();
-
-    function refreshWalletAddress(nextPublicKey?: PhantomPublicKey | null) {
-      const adapterAddress = wallet.publicKey?.toBase58() ?? "";
-      const providerAddress = publicKeyToString(nextPublicKey ?? provider?.publicKey);
-      setWalletAddress(adapterAddress || providerAddress);
-    }
-
-    const handleDisconnect = () => {
-      setWalletAddress("");
+    if (!walletAddress) {
       setLocalSelectedOption(null);
-    };
-
-    refreshWalletAddress();
-    provider?.on?.("connect", refreshWalletAddress);
-    provider?.on?.("accountChanged", refreshWalletAddress);
-    provider?.on?.("disconnect", handleDisconnect);
-
-    return () => {
-      provider?.removeListener?.("connect", refreshWalletAddress);
-      provider?.removeListener?.("accountChanged", refreshWalletAddress);
-      provider?.removeListener?.("disconnect", handleDisconnect);
-    };
-  }, [wallet.publicKey]);
+    }
+  }, [walletAddress]);
 
   useEffect(() => {
-    if (!localPoll || !walletAddress) {
+    if (!localPollOptionsCount || !walletAddress) {
       return;
     }
 
-    const storedVoteState = readLocalPollVoteState(params.id, localPoll.options.length);
+    const storedVoteState = readLocalPollVoteState(params.id, localPollOptionsCount);
     const previousOption = storedVoteState?.voters[walletAddress];
     setLocalSelectedOption(typeof previousOption === "number" ? previousOption : null);
-  }, [params.id, walletAddress, localPoll?.options.length]);
+  }, [params.id, walletAddress, localPollOptionsCount]);
 
   function updateLocalOption(index: number, value: string) {
     setLocalOptions((currentOptions) =>
@@ -253,7 +202,7 @@ export default function PollDetailsPage({
     }
 
     if (!walletAddress) {
-      setLocalVoteStatus("Connect Phantom before voting.");
+      setLocalVoteStatus("Please connect Phantom wallet first.");
       return;
     }
 
@@ -262,31 +211,21 @@ export default function PollDetailsPage({
       return;
     }
 
-    // TODO: connect vote action to Anchor program
     const storedVoteState = readLocalPollVoteState(params.id, localPoll.options.length);
     const previousOption = storedVoteState?.voters[walletAddress];
 
-    if (previousOption === localSelectedOption) {
-      setLocalVoteStatus("You already voted for this option.");
+    if (typeof previousOption === "number") {
+      setLocalVoteStatus("This wallet has already voted in this poll.");
       return;
     }
 
     const nextVoteCounts = [...(storedVoteState?.voteCounts ?? localPoll.voteCounts)];
-    const hasPreviousVote =
-      typeof previousOption === "number" &&
-      previousOption >= 0 &&
-      previousOption < nextVoteCounts.length;
-
-    if (hasPreviousVote) {
-      nextVoteCounts[previousOption] = Math.max(0, nextVoteCounts[previousOption] - 1);
-    }
-
     nextVoteCounts[localSelectedOption] = (nextVoteCounts[localSelectedOption] ?? 0) + 1;
     const baseTotalVotes = storedVoteState?.totalVotes ?? localPoll.totalVotes;
 
     const nextVoteState: LocalPollVoteState = {
       voteCounts: nextVoteCounts,
-      totalVotes: hasPreviousVote ? baseTotalVotes : baseTotalVotes + 1,
+      totalVotes: baseTotalVotes + 1,
       voters: {
         ...(storedVoteState?.voters ?? {}),
         [walletAddress]: localSelectedOption
@@ -309,11 +248,7 @@ export default function PollDetailsPage({
           }
         : currentPoll
     );
-    setLocalVoteStatus(
-      hasPreviousVote
-        ? "Vote updated."
-        : "Vote recorded."
-    );
+    setLocalVoteStatus("Vote recorded.");
   }
 
   const loadFailed = status.startsWith("Could not load") && !poll;
@@ -328,7 +263,7 @@ export default function PollDetailsPage({
               Back to polls
             </Link>
             <h1 className="mt-3 text-4xl font-black text-white">
-              {poll?.title ?? localPoll?.title ?? "GOTY poll"}
+              {poll?.title ?? localPoll?.title ?? "Libros poll"}
             </h1>
             <p className="mt-2 break-all text-sm text-slate-400">Poll account: {params.id}</p>
           </div>

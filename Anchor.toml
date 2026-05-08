@@ -3,10 +3,10 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-goty_voting = "11111111111111111111111111111111"
+goty_voting = "Bb4F9xrbrxHrDbHuosgGSsmJFF7iyNs1BCwYf4R54w6K"
 
 [programs.devnet]
-goty_voting = "11111111111111111111111111111111"
+goty_voting = "Bb4F9xrbrxHrDbHuosgGSsmJFF7iyNs1BCwYf4R54w6K"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1,25 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { shortenAddress } from "@/utils/constants";
-
-type PhantomPublicKey = {
-  toString: () => string;
-  toBase58?: () => string;
-};
-
-type PhantomProviderLike = {
-  publicKey?: PhantomPublicKey | null;
-  on?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-  removeListener?: (
-    event: "connect" | "disconnect" | "accountChanged",
-    handler: (publicKey?: PhantomPublicKey | null) => void
-  ) => void;
-};
 
 type AccountState = {
   walletAddress: string;
@@ -27,22 +10,6 @@ type AccountState = {
   localPollsCount: number;
   localVotesCount: number;
 };
-
-function getPhantomProvider(): PhantomProviderLike | undefined {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-
-  return (window as Window & { solana?: PhantomProviderLike }).solana;
-}
-
-function publicKeyToString(publicKey?: PhantomPublicKey | null): string {
-  if (!publicKey) {
-    return "";
-  }
-
-  return publicKey.toBase58?.() ?? publicKey.toString();
-}
 
 function safeParseJson(value: string | null): unknown {
   if (!value) {
@@ -112,6 +79,7 @@ function readAccountState(walletAddress: string): AccountState {
 
 export default function UserAccount() {
   const wallet = useWallet();
+  const walletAddress = useMemo(() => wallet.publicKey?.toBase58() ?? "", [wallet.publicKey]);
   const [account, setAccount] = useState<AccountState>({
     walletAddress: "",
     username: "",
@@ -120,13 +88,7 @@ export default function UserAccount() {
   });
 
   useEffect(() => {
-    const provider = getPhantomProvider();
-
-    function refreshAccount(nextPublicKey?: PhantomPublicKey | null) {
-      const adapterAddress = wallet.publicKey?.toBase58() ?? "";
-      const providerAddress = publicKeyToString(nextPublicKey ?? provider?.publicKey);
-      const walletAddress = adapterAddress || providerAddress;
-
+    function refreshAccount() {
       if (!walletAddress) {
         setAccount({
           walletAddress: "",
@@ -140,44 +102,29 @@ export default function UserAccount() {
       setAccount(readAccountState(walletAddress));
     }
 
-    const handleDisconnect = () => {
-      setAccount({
-        walletAddress: "",
-        username: "",
-        localPollsCount: 0,
-        localVotesCount: 0
-      });
-    };
-
     const handleStorage = () => refreshAccount();
 
     refreshAccount();
-    provider?.on?.("connect", refreshAccount);
-    provider?.on?.("accountChanged", refreshAccount);
-    provider?.on?.("disconnect", handleDisconnect);
     window.addEventListener("storage", handleStorage);
 
     return () => {
-      provider?.removeListener?.("connect", refreshAccount);
-      provider?.removeListener?.("accountChanged", refreshAccount);
-      provider?.removeListener?.("disconnect", handleDisconnect);
       window.removeEventListener("storage", handleStorage);
     };
-  }, [wallet.publicKey]);
+  }, [walletAddress]);
 
   if (!account.walletAddress) {
     return (
       <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div className="border-l-4 border-neon pl-3">
-            <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
+            <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Libros account</p>
             <h2 className="mt-2 text-2xl font-black text-white">Connect wallet</h2>
           </div>
           <span className="w-fit rounded-sm border border-[#42515a] px-3 py-2 text-sm font-black text-slate-300">
             Disconnected
           </span>
         </div>
-        <p className="mt-3 text-sm text-slate-300">Connect your wallet to view your account.</p>
+        <p className="mt-3 text-sm text-slate-300">Please connect Phantom wallet first.</p>
       </section>
     );
   }
@@ -186,7 +133,7 @@ export default function UserAccount() {
     <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="border-l-4 border-neon pl-3">
-          <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">User Account</p>
+          <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Libros account</p>
           <h2 className="mt-2 text-2xl font-black text-white">
             {account.username || "Unnamed voter"}
           </h2>

@@ -7,8 +7,8 @@ import { WalletProviders } from "@/components/WalletProviders";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GOTY ChainVote",
-  description: "Decentralized poll voting with Phantom wallet support"
+  title: "Libros",
+  description: "Solana Devnet Game of the Year voting with Phantom wallet support"
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     <span className="grid h-11 w-12 place-items-center rounded-md border border-[#42515a]/45 bg-[#10171b] p-2 shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition group-hover:border-[#b72026]/70 group-hover:shadow-[0_0_26px_rgba(183,32,38,0.28)]">
                       <SolanaLogo className="h-full w-full" idPrefix="solanaHeaderLogo" />
                     </span>
-                    <span>GOTY ChainVote</span>
+                    <span>Libros</span>
                   </Link>
                   <nav
                     aria-label="Main navigation"
@@ -59,8 +59,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <footer className="border-t border-[#42515a]/40 bg-[#0b0f12]/80">
               <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-5 py-6 text-sm text-slate-500 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex flex-col gap-1">
-                  <span>Solana voting with Phantom wallet support</span>
-                  <span>Built for fast, transparent polling</span>
+                  <span>Solana Devnet voting with Phantom wallet support</span>
+                  <span>Built for transparent Game of the Year polling</span>
                 </div>
                 <div className="flex flex-wrap items-center gap-3" aria-label="Project partners">
                   <div className="rounded-sm border border-[#42515a]/45 bg-[#10171b]/80 px-5 py-3 font-black uppercase tracking-[0.18em] text-slate-200 shadow-[0_14px_32px_rgba(0,0,0,0.18)]">

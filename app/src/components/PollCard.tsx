@@ -22,6 +22,8 @@ function getStatusClasses(status: Poll["status"]): string {
 }
 
 function PollCard({ poll }: { poll: Poll }) {
+  const pollHref = poll.source === "local" ? `/poll/${poll.id}?source=local` : `/poll/${poll.id}`;
+
   return (
     <article className="motion-panel glass-panel group relative flex h-full flex-col justify-between overflow-hidden rounded-sm border border-[#42515a]/45 p-5 transition hover:-translate-y-1 hover:border-neon/80 hover:shadow-[0_28px_80px_rgba(0,0,0,0.34)]">
       <div className="absolute inset-x-0 top-0 h-1 bg-neon" />
@@ -69,7 +71,7 @@ function PollCard({ poll }: { poll: Poll }) {
       <div className="mt-6 flex items-center justify-between gap-4 border-t border-[#42515a]/35 pt-4">
         <p className="text-sm font-semibold text-slate-300">{poll.totalVotes} total votes</p>
         <Link
-          href={`/poll/${poll.id}?source=local`}
+          href={pollHref}
           className="rounded-sm bg-neon px-3 py-2 text-sm font-black uppercase tracking-wide text-white transition hover:bg-[#d32a31]"
         >
           View poll

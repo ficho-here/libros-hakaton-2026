@@ -33,7 +33,11 @@ describe("goty_voting", () => {
     }
 
     [pollPda] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("poll"), pollId.toArrayLike(Buffer, "le", 8)],
+      [
+        Buffer.from("poll"),
+        creator.publicKey.toBuffer(),
+        pollId.toArrayLike(Buffer, "le", 8),
+      ],
       program.programId,
     );
 
@@ -70,6 +74,7 @@ describe("goty_voting", () => {
     expect(
       poll.votes.map((count: anchor.BN) => count.toNumber()),
     ).to.deep.equal([0, 0, 0, 0]);
+    expect(poll.totalVotes.toNumber()).to.equal(0);
     expect(poll.createdAt.toNumber()).to.be.greaterThan(0);
     expect(poll.bump).to.be.a("number");
   });
@@ -97,6 +102,7 @@ describe("goty_voting", () => {
     expect(
       poll.votes.map((count: anchor.BN) => count.toNumber()),
     ).to.deep.equal([0, 1, 0, 0]);
+    expect(poll.totalVotes.toNumber()).to.equal(1);
   });
 
   it("blocks duplicate voting", async () => {

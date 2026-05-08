@@ -1,10 +1,6 @@
 use anchor_lang::prelude::*;
 
-// Beginner note:
-// This placeholder lets the starter compile. After running `anchor keys sync`,
-// copy the generated program id into this line, Anchor.toml, and the frontend
-// constant in app/src/utils/constants.ts.
-declare_id!("11111111111111111111111111111111");
+declare_id!("Bb4F9xrbrxHrDbHuosgGSsmJFF7iyNs1BCwYf4R54w6K");
 
 const MAX_TITLE_LEN: usize = 80;
 const MIN_OPTIONS: usize = 2;
@@ -39,6 +35,7 @@ pub mod goty_voting {
         poll.creator = ctx.accounts.creator.key();
         poll.title = title;
         poll.votes = vec![0; options.len()];
+        poll.total_votes = 0;
         poll.options = options;
         poll.created_at = Clock::get()?.unix_timestamp;
         poll.bump = ctx.bumps.poll;
@@ -56,6 +53,10 @@ pub mod goty_voting {
         );
 
         poll.votes[option_index_usize] = poll.votes[option_index_usize]
+            .checked_add(1)
+            .ok_or(VotingError::VoteOverflow)?;
+        poll.total_votes = poll
+            .total_votes
             .checked_add(1)
             .ok_or(VotingError::VoteOverflow)?;
 
@@ -77,7 +78,7 @@ pub struct CreatePoll<'info> {
         init,
         payer = creator,
         space = Poll::SPACE,
-        seeds = [b"poll", poll_id.to_le_bytes().as_ref()],
+        seeds = [b"poll", creator.key().as_ref(), poll_id.to_le_bytes().as_ref()],
         bump
     )]
     pub poll: Account<'info, Poll>,
@@ -120,6 +121,7 @@ pub struct Poll {
     pub title: String,
     pub options: Vec<String>,
     pub votes: Vec<u64>,
+    pub total_votes: u64,
     pub created_at: i64,
     pub bump: u8,
 }
@@ -131,6 +133,7 @@ impl Poll {
         + 4 + MAX_TITLE_LEN // title
         + 4 + (MAX_OPTIONS * (4 + MAX_OPTION_LEN)) // options
         + 4 + (MAX_OPTIONS * 8) // votes
+        + 8 // total_votes
         + 8 // created_at
         + 1; // bump
 }

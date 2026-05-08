@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
   createPoll as createPollService,
@@ -13,14 +14,17 @@ export function useVotingProgram() {
   const { connection } = useConnection();
   const wallet = useWallet();
 
-  return {
-    createPoll: (title: string, options: string[]) => createPollService(connection, wallet, title, options),
-    vote: (pollPublicKey: Parameters<typeof voteService>[2], optionIndex: number) =>
-      voteService(connection, wallet, pollPublicKey, optionIndex),
-    fetchPoll: (pollPublicKey: Parameters<typeof fetchPollService>[1]) =>
-      fetchPollService(connection, pollPublicKey),
-    fetchAllPolls: () => fetchAllPollsService(connection),
-    fetchVotesForPoll: (pollPublicKey: Parameters<typeof fetchVotesForPollService>[1]) =>
-      fetchVotesForPollService(connection, pollPublicKey)
-  };
+  return useMemo(
+    () => ({
+      createPoll: (title: string, options: string[]) => createPollService(connection, wallet, title, options),
+      vote: (pollPublicKey: Parameters<typeof voteService>[2], optionIndex: number) =>
+        voteService(connection, wallet, pollPublicKey, optionIndex),
+      fetchPoll: (pollPublicKey: Parameters<typeof fetchPollService>[1]) =>
+        fetchPollService(connection, pollPublicKey),
+      fetchAllPolls: () => fetchAllPollsService(connection),
+      fetchVotesForPoll: (pollPublicKey: Parameters<typeof fetchVotesForPollService>[1]) =>
+        fetchVotesForPollService(connection, pollPublicKey)
+    }),
+    [connection, wallet]
+  );
 }

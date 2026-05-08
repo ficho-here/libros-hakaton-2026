@@ -1,12 +1,279 @@
 {
-  "address": "11111111111111111111111111111111",
-  "version": "0.1.0",
-  "name": "goty_voting",
-  "instructions": [],
-  "accounts": [],
-  "errors": [],
+  "address": "Bb4F9xrbrxHrDbHuosgGSsmJFF7iyNs1BCwYf4R54w6K",
   "metadata": {
-    "address": "11111111111111111111111111111111",
-    "note": "Replace this file with target/idl/goty_voting.json after running anchor build."
-  }
+    "name": "goty_voting",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Game of the Year voting dApp Anchor program"
+  },
+  "instructions": [
+    {
+      "name": "create_poll",
+      "discriminator": [
+        182,
+        171,
+        112,
+        238,
+        6,
+        219,
+        14,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "poll",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              },
+              {
+                "kind": "arg",
+                "path": "poll_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "poll_id",
+          "type": "u64"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "options",
+          "type": {
+            "vec": "string"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vote",
+      "discriminator": [
+        227,
+        110,
+        155,
+        23,
+        136,
+        126,
+        172,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "poll",
+          "writable": true
+        },
+        {
+          "name": "vote",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "poll"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "option_index",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Poll",
+      "discriminator": [
+        110,
+        234,
+        167,
+        188,
+        231,
+        136,
+        153,
+        111
+      ]
+    },
+    {
+      "name": "Vote",
+      "discriminator": [
+        96,
+        91,
+        104,
+        57,
+        145,
+        35,
+        172,
+        155
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TitleEmpty",
+      "msg": "Poll title cannot be empty."
+    },
+    {
+      "code": 6001,
+      "name": "TitleTooLong",
+      "msg": "Poll title is too long."
+    },
+    {
+      "code": 6002,
+      "name": "NotEnoughOptions",
+      "msg": "A poll needs at least two options."
+    },
+    {
+      "code": 6003,
+      "name": "TooManyOptions",
+      "msg": "A poll can have at most ten options."
+    },
+    {
+      "code": 6004,
+      "name": "OptionEmpty",
+      "msg": "Poll options cannot be empty."
+    },
+    {
+      "code": 6005,
+      "name": "OptionTooLong",
+      "msg": "Poll option is too long."
+    },
+    {
+      "code": 6006,
+      "name": "InvalidOption",
+      "msg": "Selected option does not exist."
+    },
+    {
+      "code": 6007,
+      "name": "VoteOverflow",
+      "msg": "Vote count overflowed."
+    }
+  ],
+  "types": [
+    {
+      "name": "Poll",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poll_id",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "options",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "votes",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "total_votes",
+            "type": "u64"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "poll",
+            "type": "pubkey"
+          },
+          {
+            "name": "option_index",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
 }

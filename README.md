@@ -1,222 +1,243 @@
-# GOTY ChainVote
+# Libros
 
-GOTY ChainVote is a beginner-friendly Solana Devnet voting dApp for a hackathon project. Users connect a Phantom wallet, create Game of the Year polls, vote once per poll, and view on-chain results including vote counts and voter wallet addresses.
+Libros je Solana Devnet voting dApp gdje korisnici glasaju za Game of the Year putem Phantom walleta, a svaki glas se transparentno sprema on-chain.
 
-## Tech Stack
+## Kratak Opis
+
+Libros omogućuje korisniku da spoji Phantom wallet, napravi anketu s više igara, glasa za jednu opciju i vidi rezultate koji su spremljeni na Solana blockchainu. Svaki wallet može glasati samo jednom po anketi i taj glas se ne može promijeniti.
+
+## Tehnologije
 
 - Solana Devnet
 - Anchor framework
 - Rust smart contract
-- Next.js with TypeScript
+- Next.js i React
+- TypeScript
+- Phantom wallet
 - `@solana/wallet-adapter`
-- Phantom wallet adapter
 - Tailwind CSS
 
-## Repository Structure
+## Funkcionalnosti
+
+- Spajanje i odspajanje Phantom walleta
+- Prikaz spojene wallet adrese
+- Kreiranje Game of the Year ankete
+- Spremanje ankete on-chain kroz Anchor program
+- Glasanje jednom po walletu
+- Glasovi se ne mogu mijenjati
+- On-chain brojanje glasova
+- Prikaz rezultata, ukupnog broja glasova i wallet adresa glasača
+
+## Struktura Projekta
 
 ```text
-.
-├── Anchor.toml
-├── programs/goty_voting/src/lib.rs
-├── tests/goty_voting.ts
-├── app
-│   ├── package.json
-│   └── src
-│       ├── app
-│       ├── components
-│       ├── hooks
-│       ├── idl
-│       ├── services
-│       └── utils
-└── README.md
+programs/goty_voting/src/lib.rs
+tests/goty_voting.ts
+Anchor.toml
+app/src/app/page.tsx
+app/src/app/create/page.tsx
+app/src/app/poll/[id]/page.tsx
+app/src/components/
+app/src/hooks/useVotingProgram.ts
+app/src/services/votingService.ts
+app/src/idl/goty_voting.json
+app/src/utils/constants.ts
+README.md
 ```
 
-## Smart Contract Features
+## Instalacija Dependencija
 
-- Create a poll PDA using seeds: `["poll", creator pubkey, poll_id little endian]`
-- Store poll id, creator wallet, title, options, vote counts, total votes, timestamp, and bump
-- Vote with a vote PDA using seeds: `["vote", poll pubkey, voter pubkey]`
-- Store voter wallet, poll address, poll id, selected option, timestamp, and bump
-- Prevent duplicate voting because the same vote PDA cannot be initialized twice
-- Validate title, option count, option length, invalid option indexes, and math overflow
-
-## Prerequisites
-
-Install these before running the project:
-
-- Rust
-- Solana CLI
-- Anchor CLI
-- Node.js 18+
-- Phantom browser wallet
-
-Check versions:
-
-```bash
-rustc --version
-solana --version
-anchor --version
-node --version
-```
-
-## Install Dependencies
-
-From the repo root:
+U root folderu projekta pokreni:
 
 ```bash
 npm install
 ```
 
-For the frontend:
+Ova naredba instalira dependencije za Anchor testove u root projektu.
+
+Zatim instaliraj frontend dependencije:
 
 ```bash
 cd app
 npm install
 ```
 
-You can use `yarn install` instead of `npm install` if your team prefers Yarn.
+Ova naredba instalira Next.js, React i wallet adapter dependencije za frontend.
 
-## Local Validator
+## Anchor Build
 
-In one terminal:
-
-```bash
-solana-test-validator
-```
-
-In another terminal:
-
-```bash
-solana config set --url localhost
-solana airdrop 2
-```
-
-## Build the Anchor Program
+Iz root foldera pokreni:
 
 ```bash
 anchor build
 ```
 
-After building, sync the generated keypair into the code:
+Ova naredba kompajlira Rust smart contract i generira IDL datoteku.
+
+Ako mijenjaš program ili deployaš novi program, sinkroniziraj Program ID:
 
 ```bash
 anchor keys sync
 ```
 
-Then check these files and make sure they all contain the same program ID:
+Ova naredba upisuje Program ID iz keypaira u Anchor konfiguraciju.
 
-- `programs/goty_voting/src/lib.rs`
-- `Anchor.toml`
-- `app/src/utils/constants.ts`
+## Anchor Testovi
 
-## Run Anchor Tests
+Iz root foldera pokreni:
 
 ```bash
 anchor test
 ```
 
-The tests cover:
+Ova naredba pokreće Anchor testove koji provjeravaju kreiranje ankete, glasanje, blokiranje drugog glasa i brojanje glasova.
 
-- Creating a poll
-- Successful voting
-- Blocking duplicate voting
-- Vote count updates
+Ako lokalni Anchor CLI ne može pokrenuti lokalni validator, prvo možeš provjeriti Rust dio s:
 
-## Deploy to Devnet
+```bash
+cargo test
+```
 
-Set Solana to Devnet:
+Ova naredba provjerava da se Rust program može kompajlirati i da osnovni testovi prolaze.
+
+## Deploy Na Solana Devnet
+
+Postavi Solana CLI na Devnet:
 
 ```bash
 solana config set --url devnet
+```
+
+Ova naredba kaže Solana CLI-ju da koristi Devnet mrežu.
+
+Zatraži testni SOL za deploy i transakcije:
+
+```bash
 solana airdrop 2
 ```
 
-Build and deploy:
+Ova naredba dodaje Devnet SOL u tvoj CLI wallet.
+
+Buildaj i deployaj program:
 
 ```bash
 anchor build
-anchor keys sync
 anchor deploy
 ```
 
-Copy the deployed program ID into:
+Ove naredbe prvo kompajliraju smart contract, a zatim ga deployaju na Solana Devnet.
 
-```text
-app/src/utils/constants.ts
-```
+## Gdje Promijeniti Program ID
 
-Copy the generated IDL into the frontend:
+Program ID mora biti isti u ova tri mjesta:
+
+- `programs/goty_voting/src/lib.rs` u `declare_id!("...")`
+- `Anchor.toml` pod `goty_voting`
+- `app/src/utils/constants.ts` u `PROGRAM_ID`
+
+Trenutni Program ID u kodu nije default `11111111111111111111111111111111`, ali nakon vašeg deploya treba zalijepiti stvarni Devnet Program ID u sva tri mjesta.
+
+## Gdje Kopirati IDL
+
+Nakon svakog `anchor build`, kopiraj generirani IDL u frontend:
 
 ```bash
 cp target/idl/goty_voting.json app/src/idl/goty_voting.json
 ```
 
-## Run the Frontend
+Ova naredba omogućuje frontend aplikaciji da zna koje Anchor instrukcije i accounti postoje.
+
+## Pokretanje Frontenda
+
+U frontend folderu pokreni:
 
 ```bash
 cd app
 npm run dev
 ```
 
-Open:
+Ova naredba pokreće Next.js aplikaciju za lokalni demo.
+
+Otvori u browseru:
 
 ```text
 http://localhost:3000
 ```
 
-In Phantom:
+## Phantom Wallet Na Devnetu
 
-1. Open settings.
-2. Enable developer settings if needed.
-3. Switch network to Devnet.
-4. Connect to the app.
+Za demo treba napraviti ovo:
 
-## Frontend Pages
+1. Instaliraj Phantom ekstenziju u browser.
+2. Otvori Phantom postavke.
+3. Uključi Developer Settings ako je potrebno.
+4. Promijeni mrežu na Devnet.
+5. Dodaj Devnet SOL u wallet preko fauceta ili Solana CLI naredbe.
+6. Spoji Phantom na Libros aplikaciju.
 
-- `/` shows the GOTY ChainVote home page, wallet connection, and poll list.
-- `/create` lets users create a poll with 2 to 10 game options.
-- `/poll/[id]` lets users vote and view results for a poll account address.
+Bez Devnet SOL-a wallet ne može platiti transakcije za kreiranje ankete ili glasanje.
 
-## Important Beginner Notes
+## Demo Scenarij Za Žiri
 
-The checked-in frontend IDL is only a placeholder. The app needs the real IDL after `anchor build`:
+1. Otvorimo Libros na `http://localhost:3000`.
+2. Spojimo Phantom wallet koji je postavljen na Devnet.
+3. Otvorimo stranicu `Create Poll`.
+4. Napravimo Game of the Year anketu s nekoliko igara.
+5. Potvrdimo transakciju u Phantomu.
+6. Otvorimo kreiranu anketu.
+7. Glasamo za jednu igru i potvrdimo transakciju.
+8. Pokažemo rezultate: broj glasova po opciji, ukupne glasove i wallet adresu glasača.
+9. Pokušamo glasati ponovno istim walletom i pokažemo da smart contract blokira drugi glas.
+
+## Poznati Problemi I TODO
+
+- Prije finalnog demoa treba deployati program na Devnet i zalijepiti isti Program ID u `lib.rs`, `Anchor.toml` i `app/src/utils/constants.ts`.
+- Nakon `anchor build` treba kopirati IDL u `app/src/idl/goty_voting.json`.
+- Phantom mora biti na Devnet mreži.
+- Wallet mora imati Devnet SOL za transakcije.
+- `program.account.poll.all()` je jednostavno rješenje za hackathon demo. Za veći produkcijski projekt trebalo bi dodati indeksiranje ili paginaciju.
+- Ako `anchor test` ne radi zbog lokalnog validatora ili CLI alata, provjeri `anchor build` i `cargo test`, zatim pokreni testove na računalu gdje Solana/Anchor lokalni alati rade ispravno.
+
+## Korisne Naredbe
+
+```bash
+npm install
+```
+
+Instalira root dependencije.
+
+```bash
+cd app && npm install
+```
+
+Instalira frontend dependencije.
+
+```bash
+anchor build
+```
+
+Kompajlira Anchor program i generira IDL.
+
+```bash
+anchor test
+```
+
+Pokreće Anchor testove.
+
+```bash
+anchor deploy
+```
+
+Deploya program na mrežu koju Solana CLI trenutno koristi.
 
 ```bash
 cp target/idl/goty_voting.json app/src/idl/goty_voting.json
 ```
 
-The checked-in program ID is also a placeholder. Always update it after `anchor keys sync` or deployment.
-
-Fetching every account with `program.account.poll.all()` is okay for a hackathon demo on Devnet. Larger production apps usually add indexing or pagination.
-
-## Branch Workflow for Team Members
-
-Use separate branches so teammates do not overwrite each other:
+Kopira IDL u frontend.
 
 ```bash
-git checkout -b feature/wallet-ui
-git checkout -b feature/create-poll
-git checkout -b feature/results-page
-git checkout -b test/anchor-voting
+cd app && npm run dev
 ```
 
-Recommended workflow:
-
-```bash
-git status
-git add .
-git commit -m "Add create poll form"
-git push origin feature/create-poll
-```
-
-Then open a pull request and ask a teammate to review before merging.
-
-## Hackathon Demo Checklist
-
-- Phantom connects on Devnet
-- Poll creation transaction succeeds
-- Poll account appears on home page
-- Wallet can vote once
-- Second vote from the same wallet fails
-- Results show vote counts
-- Results show voter wallet addresses and selected options
+Pokreće Libros frontend.

@@ -12,7 +12,7 @@ export type PollAccount = {
   creator: PublicKey;
   title: string;
   options: string[];
-  voteCounts: BN[];
+  votes: BN[];
   totalVotes: BN;
   createdAt: BN;
   bump: number;
@@ -22,9 +22,8 @@ export type VoteAccount = {
   publicKey: string;
   voter: PublicKey;
   poll: PublicKey;
-  pollId: BN;
   optionIndex: number;
-  votedAt: BN;
+  timestamp: BN;
   bump: number;
 };
 
@@ -45,7 +44,7 @@ type AnchorWalletLike = {
 
 function requireAnchorWallet(wallet: WalletContextState): AnchorWalletLike {
   if (!wallet.publicKey || !wallet.signTransaction || !wallet.signAllTransactions) {
-    throw new Error("Connect Phantom wallet first.");
+    throw new Error("Please connect Phantom wallet first.");
   }
 
   return {
@@ -53,6 +52,10 @@ function requireAnchorWallet(wallet: WalletContextState): AnchorWalletLike {
     signTransaction: wallet.signTransaction,
     signAllTransactions: wallet.signAllTransactions
   };
+}
+
+function getTotalStringBytes(values: string[]) {
+  return values.reduce((sum, value) => sum + new TextEncoder().encode(value).length, 0);
 }
 
 export function getProgram(connection: Connection, wallet?: WalletContextState) {
@@ -76,11 +79,37 @@ export async function createPoll(
   const anchorWallet = requireAnchorWallet(wallet);
   const program = getProgram(connection, wallet);
   const pollId = new BN(Date.now());
+  const cleanedTitle = title.trim();
   const cleanedOptions = options.map((option) => option.trim()).filter(Boolean);
+
+  if (!cleanedTitle) {
+    throw new Error("Poll title cannot be empty.");
+  }
+
+  if (new TextEncoder().encode(cleanedTitle).length > 80) {
+    throw new Error("Poll title is too long.");
+  }
+
+  if (cleanedOptions.length < 2) {
+    throw new Error("Add at least two options.");
+  }
+
+  if (cleanedOptions.length > 10) {
+    throw new Error("A poll can have at most ten options.");
+  }
+
+  if (cleanedOptions.some((option) => new TextEncoder().encode(option).length > 40)) {
+    throw new Error("Each option must be 40 characters or fewer.");
+  }
+
+  if (getTotalStringBytes(cleanedOptions) === 0) {
+    throw new Error("Poll options cannot be empty.");
+  }
+
   const [pollPda] = findPollPda(anchorWallet.publicKey, pollId);
 
   const signature = await program.methods
-    .createPoll(pollId, title.trim(), cleanedOptions)
+    .createPoll(pollId, cleanedTitle, cleanedOptions)
     .accounts({
       poll: pollPda,
       creator: anchorWallet.publicKey,
@@ -137,7 +166,7 @@ export async function fetchAllPolls(connection: Connection, creator?: PublicKey)
 export async function fetchVotesForPoll(connection: Connection, pollPublicKey: PublicKey | string) {
   const program = getProgram(connection);
   const key = typeof pollPublicKey === "string" ? new PublicKey(pollPublicKey) : pollPublicKey;
-  const votes = (await program.account.voteRecord.all()) as ProgramAccount<Omit<VoteAccount, "publicKey">>[];
+  const votes = (await program.account.vote.all()) as ProgramAccount<Omit<VoteAccount, "publicKey">>[];
 
   return votes
     .map((account) => ({

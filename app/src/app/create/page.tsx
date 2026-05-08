@@ -11,7 +11,7 @@ export default function CreatePage() {
             <Link href="/" className="text-sm font-bold text-neon">
               Back to polls
             </Link>
-            <h1 className="mt-3 text-4xl font-black text-white">Create GOTY poll</h1>
+            <h1 className="mt-3 text-4xl font-black text-white">Create a Libros poll</h1>
             <p className="mt-2 text-slate-300">
               Add 2 to 10 game nominees. The poll title, options, creator, timestamp, and vote counts live on-chain.
             </p>
