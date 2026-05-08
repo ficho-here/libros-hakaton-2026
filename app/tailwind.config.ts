@@ -5,10 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        arena: "#080A12",
-        panel: "#121827",
-        neon: "#4ADE80",
-        trophy: "#FACC15"
+        arena: "#101416",
+        panel: "#182127",
+        neon: "#b72026",
+        trophy: "#42515a",
+        steel: "#42515a"
       }
     }
   },

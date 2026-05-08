@@ -1,0 +1,20 @@
+import UserAccount from "@/components/UserAccount";
+
+export default function AccountPage() {
+  return (
+    <main className="min-h-screen bg-arena">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 py-8 sm:px-8">
+        <div>
+          <p className="text-sm font-black uppercase tracking-wide text-trophy">Profile</p>
+          <h1 className="mt-2 text-4xl font-black text-white">User Account</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+            Frontend-only account view for your connected wallet, local username,
+            and local preview activity.
+          </p>
+        </div>
+
+        <UserAccount />
+      </div>
+    </main>
+  );
+}

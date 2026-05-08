@@ -1,0 +1,239 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { shortenAddress } from "@/utils/constants";
+
+type PhantomPublicKey = {
+  toString: () => string;
+  toBase58?: () => string;
+};
+
+type PhantomProviderLike = {
+  publicKey?: PhantomPublicKey | null;
+  on?: (
+    event: "connect" | "disconnect" | "accountChanged",
+    handler: (publicKey?: PhantomPublicKey | null) => void
+  ) => void;
+  removeListener?: (
+    event: "connect" | "disconnect" | "accountChanged",
+    handler: (publicKey?: PhantomPublicKey | null) => void
+  ) => void;
+};
+
+type AccountState = {
+  walletAddress: string;
+  username: string;
+  localPollsCount: number;
+  localVotesCount: number;
+};
+
+function getPhantomProvider(): PhantomProviderLike | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return (window as Window & { solana?: PhantomProviderLike }).solana;
+}
+
+function publicKeyToString(publicKey?: PhantomPublicKey | null): string {
+  if (!publicKey) {
+    return "";
+  }
+
+  return publicKey.toBase58?.() ?? publicKey.toString();
+}
+
+function safeParseJson(value: string | null): unknown {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+function countStoredItems(keys: string[]): number {
+  return keys.reduce((count, key) => {
+    const parsed = safeParseJson(localStorage.getItem(key));
+
+    if (Array.isArray(parsed)) {
+      return count + parsed.length;
+    }
+
+    if (typeof parsed === "number") {
+      return count + parsed;
+    }
+
+    if (parsed && typeof parsed === "object") {
+      const record = parsed as Record<string, unknown>;
+      if (typeof record.count === "number") {
+        return count + record.count;
+      }
+
+      return count + 1;
+    }
+
+    return count;
+  }, 0);
+}
+
+function readUsername(walletAddress: string): string {
+  return (
+    localStorage.getItem(`chainvote:username:${walletAddress}`) ??
+    localStorage.getItem(`username:${walletAddress}`) ??
+    ""
+  );
+}
+
+function readAccountState(walletAddress: string): AccountState {
+  // TODO: replace local account stats with indexed on-chain data
+  const localPollsCount = countStoredItems([
+    `chainvote:localPolls:${walletAddress}`,
+    `localPolls:${walletAddress}`
+  ]);
+
+  // TODO: show real on-chain voting history when backend/indexer exists
+  const localVotesCount = countStoredItems([
+    `chainvote:localVotes:${walletAddress}`,
+    `localVotes:${walletAddress}`
+  ]);
+
+  return {
+    walletAddress,
+    username: readUsername(walletAddress),
+    localPollsCount,
+    localVotesCount
+  };
+}
+
+export default function UserAccount() {
+  const wallet = useWallet();
+  const [account, setAccount] = useState<AccountState>({
+    walletAddress: "",
+    username: "",
+    localPollsCount: 0,
+    localVotesCount: 0
+  });
+
+  useEffect(() => {
+    const provider = getPhantomProvider();
+
+    function refreshAccount(nextPublicKey?: PhantomPublicKey | null) {
+      const adapterAddress = wallet.publicKey?.toBase58() ?? "";
+      const providerAddress = publicKeyToString(nextPublicKey ?? provider?.publicKey);
+      const walletAddress = adapterAddress || providerAddress;
+
+      if (!walletAddress) {
+        setAccount({
+          walletAddress: "",
+          username: "",
+          localPollsCount: 0,
+          localVotesCount: 0
+        });
+        return;
+      }
+
+      setAccount(readAccountState(walletAddress));
+    }
+
+    const handleDisconnect = () => {
+      setAccount({
+        walletAddress: "",
+        username: "",
+        localPollsCount: 0,
+        localVotesCount: 0
+      });
+    };
+
+    const handleStorage = () => refreshAccount();
+
+    refreshAccount();
+    provider?.on?.("connect", refreshAccount);
+    provider?.on?.("accountChanged", refreshAccount);
+    provider?.on?.("disconnect", handleDisconnect);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      provider?.removeListener?.("connect", refreshAccount);
+      provider?.removeListener?.("accountChanged", refreshAccount);
+      provider?.removeListener?.("disconnect", handleDisconnect);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [wallet.publicKey]);
+
+  if (!account.walletAddress) {
+    return (
+      <section className="rounded-lg border border-slate-800 bg-panel p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-sm font-black uppercase tracking-wide text-trophy">User Account</p>
+            <h2 className="mt-2 text-2xl font-black text-white">Connect wallet</h2>
+          </div>
+          <span className="w-fit rounded-md border border-[#42515a] px-3 py-2 text-sm font-black text-slate-300">
+            Disconnected
+          </span>
+        </div>
+        <p className="mt-3 text-sm text-slate-300">Connect your wallet to view your account.</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-lg border border-slate-800 bg-panel p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-sm font-black uppercase tracking-wide text-trophy">User Account</p>
+          <h2 className="mt-2 text-2xl font-black text-white">
+            {account.username || "Unnamed voter"}
+          </h2>
+          <p className="mt-2 text-sm text-slate-300">Wallet connected</p>
+        </div>
+        <span className="w-fit rounded-md bg-neon px-3 py-2 text-sm font-black text-white">
+          Connected
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-3 md:grid-cols-2">
+        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+          <p className="text-sm font-bold text-slate-400">Wallet address</p>
+          <p className="mt-2 break-all text-sm font-semibold text-white">{account.walletAddress}</p>
+        </div>
+        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+          <p className="text-sm font-bold text-slate-400">Short address</p>
+          <p className="mt-2 text-sm font-semibold text-white">
+            {shortenAddress(account.walletAddress)}
+          </p>
+        </div>
+        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+          <p className="text-sm font-bold text-slate-400">Username</p>
+          <p className="mt-2 text-sm font-semibold text-white">
+            {account.username || "No username saved yet"}
+          </p>
+        </div>
+        <div className="rounded-md border border-slate-800 bg-slate-950 p-4">
+          <p className="text-sm font-bold text-slate-400">Wallet status</p>
+          <p className="mt-2 text-sm font-semibold text-white">Connected</p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-md border border-[#42515a] bg-slate-950 p-4">
+          <p className="text-3xl font-black text-white">{account.localPollsCount}</p>
+          <p className="mt-1 text-sm text-slate-400">
+            {account.localPollsCount > 0 ? "Local preview polls" : "No local polls yet"}
+          </p>
+        </div>
+        <div className="rounded-md border border-[#42515a] bg-slate-950 p-4">
+          <p className="text-3xl font-black text-white">{account.localVotesCount}</p>
+          <p className="mt-1 text-sm text-slate-400">
+            {account.localVotesCount > 0 ? "Local preview votes" : "No local votes yet"}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
