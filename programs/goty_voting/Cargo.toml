@@ -1,0 +1,19 @@
+[package]
+name = "goty_voting"
+version = "0.1.0"
+description = "Game of the Year voting dApp Anchor program"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "goty_voting"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.30.1"

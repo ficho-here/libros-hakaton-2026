@@ -1,0 +1,8 @@
+[workspace]
+members = [
+  "programs/goty_voting"
+]
+resolver = "2"
+
+[profile.release]
+overflow-checks = true

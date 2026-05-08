@@ -1,0 +1,9 @@
+target/
+.anchor/
+node_modules/
+app/node_modules/
+app/.next/
+app/out/
+.env
+.env.local
+*.log

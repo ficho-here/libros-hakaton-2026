@@ -1,0 +1,22 @@
+@import "@solana/wallet-adapter-react-ui/styles.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  background: #080a12;
+  color: #f8fafc;
+}
+
+.wallet-adapter-button {
+  border-radius: 8px !important;
+  background: #4ade80 !important;
+  color: #06110a !important;
+  font-weight: 800 !important;
+}
