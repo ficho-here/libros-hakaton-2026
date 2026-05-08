@@ -1,65 +1,88 @@
 "use client";
 
-import { PollAccount, VoteAccount } from "@/services/votingService";
+import { PollResults } from "@/services/votingService";
 
-export function ResultsPanel({
-  poll,
-  votes,
-  onRefresh
-}: {
-  poll: PollAccount;
-  votes: VoteAccount[];
-  onRefresh: () => Promise<void>;
-}) {
-  const totalVotes = poll.totalVotes.toNumber();
+function shortenAddress(address: string) {
+  if (address.length <= 12) {
+    return address;
+  }
+
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+}
+
+type ResultsPanelProps = {
+  results: PollResults;
+  isRefreshing?: boolean;
+  onRefresh: () => Promise<void> | void;
+};
+
+export function ResultsPanel({ results, isRefreshing = false, onRefresh }: ResultsPanelProps) {
+  const totalVotes = results.totalVotes;
 
   return (
-    <section className="rounded-lg border border-slate-800 bg-panel p-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-lg border border-slate-800 bg-panel p-5 shadow-2xl shadow-black/20 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-black text-white">Results</h2>
-          <p className="text-sm text-slate-400">{totalVotes} total votes</p>
+          <p className="text-sm font-black uppercase tracking-wide text-trophy">Live results</p>
+          <h2 className="mt-1 text-2xl font-black text-white">{totalVotes} total votes</h2>
         </div>
         <button
+          type="button"
           onClick={onRefresh}
-          className="rounded-md border border-slate-700 px-4 py-2 text-sm font-bold text-white hover:border-neon"
+          disabled={isRefreshing}
+          className="rounded-md border border-slate-700 px-4 py-2 text-sm font-bold text-white transition hover:border-neon disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Refresh
+          {isRefreshing ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
-      <div className="mt-5 space-y-4">
-        {poll.options.map((option, index) => {
-          const count = poll.voteCounts[index]?.toNumber() ?? 0;
-          const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+      <div className="mt-6 space-y-5">
+        {results.optionResults.map((option) => {
+          const percent = totalVotes === 0 ? 0 : Math.round((option.voteCount / totalVotes) * 100);
 
           return (
-            <div key={option}>
-              <div className="flex justify-between gap-3 text-sm">
-                <span className="font-bold text-white">{option}</span>
-                <span className="text-slate-300">
-                  {count} votes · {percent}%
-                </span>
+            <div key={option.id} className="rounded-lg border border-slate-800 bg-slate-950/70 p-4">
+              <div className="flex items-start justify-between gap-3 text-sm">
+                <div>
+                  <p className="font-black text-white">{option.label}</p>
+                  <p className="mt-1 text-slate-400">
+                    {option.voteCount} {option.voteCount === 1 ? "vote" : "votes"}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-md bg-slate-900 px-2 py-1 font-black text-neon">{percent}%</span>
               </div>
-              <div className="mt-2 h-3 overflow-hidden rounded-full bg-slate-900">
-                <div className="h-full bg-neon" style={{ width: `${percent}%` }} />
+              <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-900">
+                <div
+                  className="h-full rounded-full bg-neon transition-all"
+                  style={{ width: `${percent}%` }}
+                  aria-hidden="true"
+                />
               </div>
             </div>
           );
         })}
       </div>
 
-      <h3 className="mt-8 text-sm font-black uppercase tracking-wide text-trophy">Voter wallets</h3>
-      <div className="mt-3 space-y-2">
-        {votes.length === 0 && <p className="text-sm text-slate-400">No votes yet.</p>}
-        {votes.map((vote) => (
-          <div key={vote.publicKey} className="rounded-md bg-slate-950 p-3 text-sm">
-            <p className="break-all text-slate-200">{vote.voter.toBase58()}</p>
-            <p className="mt-1 text-slate-400">
-              Voted for: {poll.options[vote.optionIndex] ?? `Option ${vote.optionIndex}`}
+      <div className="mt-8">
+        <h3 className="text-sm font-black uppercase tracking-wide text-trophy">Voter wallets</h3>
+        <div className="mt-3 max-h-72 space-y-2 overflow-y-auto pr-1">
+          {results.voters.length === 0 && (
+            <p className="rounded-md border border-slate-800 bg-slate-950 p-3 text-sm text-slate-400">
+              No votes yet. The first connected wallet can set the pace.
             </p>
-          </div>
-        ))}
+          )}
+          {results.voters.map((voter, index) => (
+            <div
+              key={voter.voteAccount ?? `${voter.walletAddress}-${index}`}
+              className="flex flex-col gap-1 rounded-md border border-slate-800 bg-slate-950 p-3 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <span className="font-mono text-sm text-slate-200" title={voter.walletAddress}>
+                {shortenAddress(voter.walletAddress)}
+              </span>
+              <span className="text-sm text-slate-400">{voter.optionLabel}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
