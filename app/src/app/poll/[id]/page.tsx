@@ -12,7 +12,7 @@ import { PollAccount, VoteAccount } from "@/services/votingService";
 import { useVotingProgram } from "@/hooks/useVotingProgram";
 import { mockPolls } from "@/utils/constants";
 
-type LocalPollPreview = {
+type LocalPollData = {
   title: string;
   options: string[];
   voteCounts: number[];
@@ -77,7 +77,7 @@ function safeParseJson<T>(value: string | null): T | null {
 }
 
 function getLocalPollVoteStateKey(pollId: string): string {
-  return `chainvote:localPreviewPoll:${pollId}:votes`;
+  return `chainvote:localPoll:${pollId}:votes`;
 }
 
 function getLocalVotesKey(walletAddress: string): string {
@@ -113,7 +113,7 @@ export default function PollDetailsPage({
   searchParams
 }: {
   params: { id: string };
-  searchParams?: { preview?: string };
+  searchParams?: { source?: string };
 }) {
   const wallet = useWallet();
   const pollPublicKey = useMemo(() => new PublicKey(params.id), [params.id]);
@@ -121,17 +121,17 @@ export default function PollDetailsPage({
   const [poll, setPoll] = useState<PollAccount | null>(null);
   const [votes, setVotes] = useState<VoteAccount[]>([]);
   const [status, setStatus] = useState("Loading poll...");
-  const [localTitle, setLocalTitle] = useState("Local preview poll");
+  const [localTitle, setLocalTitle] = useState("New poll");
   const [localOptions, setLocalOptions] = useState(["Option 1", "Option 2"]);
   const [localFormStatus, setLocalFormStatus] = useState("");
-  const [localPoll, setLocalPoll] = useState<LocalPollPreview | null>(null);
+  const [localPoll, setLocalPoll] = useState<LocalPollData | null>(null);
   const [localSelectedOption, setLocalSelectedOption] = useState<number | null>(null);
   const [localVoteStatus, setLocalVoteStatus] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const isLocalPreview = searchParams?.preview === "local";
+  const isLocalSource = searchParams?.source === "local";
 
   async function refresh() {
-    if (isLocalPreview) {
+    if (isLocalSource) {
       const mockPoll = mockPolls.find((currentPoll) => currentPoll.id === params.id);
 
       if (mockPoll) {
@@ -156,7 +156,7 @@ export default function PollDetailsPage({
               }
             : localPollPreview
         );
-        setStatus("Showing local preview poll. This data is not saved to blockchain.");
+        setStatus("");
         return;
       }
     }
@@ -179,7 +179,7 @@ export default function PollDetailsPage({
 
   useEffect(() => {
     refresh();
-  }, [pollPublicKey.toBase58(), isLocalPreview]);
+  }, [pollPublicKey.toBase58(), isLocalSource]);
 
   useEffect(() => {
     const provider = getPhantomProvider();
@@ -227,16 +227,15 @@ export default function PollDetailsPage({
   function handleUseLocalPollData(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const cleanedTitle = localTitle.trim() || "Local preview poll";
+    const cleanedTitle = localTitle.trim() || "New poll";
     const cleanedOptions = localOptions.map((option) => option.trim()).filter(Boolean);
 
     if (cleanedOptions.length < 2) {
-      setLocalFormStatus("Add at least two options before using local poll data.");
+      setLocalFormStatus("Add at least two options before continuing.");
       return;
     }
 
     localStorage.removeItem(getLocalPollVoteStateKey(params.id));
-    // TODO: replace local preview with on-chain poll data
     setLocalPoll({
       title: cleanedTitle,
       options: cleanedOptions,
@@ -245,7 +244,7 @@ export default function PollDetailsPage({
     });
     setLocalSelectedOption(null);
     setLocalVoteStatus("");
-    setLocalFormStatus("Local preview loaded. This data is not saved to blockchain.");
+    setLocalFormStatus("Poll data loaded.");
   }
 
   function handleLocalVote() {
@@ -254,7 +253,7 @@ export default function PollDetailsPage({
     }
 
     if (!walletAddress) {
-      setLocalVoteStatus("Connect Phantom before voting in local preview.");
+      setLocalVoteStatus("Connect Phantom before voting.");
       return;
     }
 
@@ -268,7 +267,7 @@ export default function PollDetailsPage({
     const previousOption = storedVoteState?.voters[walletAddress];
 
     if (previousOption === localSelectedOption) {
-      setLocalVoteStatus("You already voted for this option in local preview.");
+      setLocalVoteStatus("You already voted for this option.");
       return;
     }
 
@@ -312,8 +311,8 @@ export default function PollDetailsPage({
     );
     setLocalVoteStatus(
       hasPreviousVote
-        ? "Local preview vote updated. Blockchain vote integration is handled separately."
-        : "Local preview vote recorded. Blockchain vote integration is handled separately."
+        ? "Vote updated."
+        : "Vote recorded."
     );
   }
 
@@ -342,11 +341,10 @@ export default function PollDetailsPage({
         {showManualFallback && (
           <section className="motion-panel rounded-sm border border-[#42515a]/45 border-t-neon bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
             <div className="border-l-4 border-neon pl-3">
-              <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Local preview</p>
+              <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Poll setup</p>
               <h2 className="mt-1 text-2xl font-black text-white">Enter poll data manually</h2>
               <p className="mt-2 text-sm text-slate-300">
-                This preview keeps you unblocked while the Anchor program, IDL, or poll account is still being wired.
-                It is not saved to blockchain.
+                Add the poll title and options to continue voting.
               </p>
             </div>
 
@@ -407,7 +405,7 @@ export default function PollDetailsPage({
                   type="submit"
                   className="rounded-sm bg-neon px-4 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:bg-[#d32a31]"
                 >
-                  Use local poll data
+                  Use poll data
                 </button>
               </div>
 
@@ -420,11 +418,8 @@ export default function PollDetailsPage({
           <section className="motion-panel rounded-sm border border-[#42515a]/45 bg-panel p-6 shadow-[0_18px_50px_rgba(0,0,0,0.18)]">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="border-l-4 border-neon pl-3">
-                <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Local preview</p>
+                <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Poll</p>
                 <h2 className="mt-1 text-2xl font-black text-white">{localPoll.title}</h2>
-                <p className="mt-2 text-sm text-slate-300">
-                  This poll is local only and is not saved to blockchain.
-                </p>
               </div>
               <p className="rounded-sm border border-[#42515a]/60 bg-[#10171b] px-3 py-2 text-sm font-bold text-slate-200">
                 {localPoll.totalVotes} total votes

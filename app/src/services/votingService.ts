@@ -32,6 +32,11 @@ export type PollWithPublicKey = PollAccount & {
   publicKey: string;
 };
 
+type ProgramAccount<T> = {
+  account: T;
+  publicKey: PublicKey;
+};
+
 type AnchorWalletLike = {
   publicKey: PublicKey;
   signTransaction: NonNullable<WalletContextState["signTransaction"]>;
@@ -57,7 +62,7 @@ export function getProgram(connection: Connection, wallet?: WalletContextState) 
     anchorWallet ?? ({} as AnchorWalletLike),
     AnchorProvider.defaultOptions()
   );
-  const programIdl = { ...(idl as Idl), address: PROGRAM_ID.toBase58() } as Idl;
+  const programIdl = { ...(idl as unknown as Idl), address: PROGRAM_ID.toBase58() } as Idl;
 
   return new Program(programIdl, provider) as any;
 }
@@ -116,12 +121,9 @@ export async function fetchPoll(connection: Connection, pollPublicKey: PublicKey
 export async function fetchAllPolls(connection: Connection, creator?: PublicKey) {
   const program = getProgram(connection);
 
-  // Beginner note:
-  // account.all() is convenient for hackathons. For large apps you would add
-  // pagination/indexing, but this keeps Devnet development easy.
-  const accounts = await program.account.poll.all();
+  const accounts = (await program.account.poll.all()) as ProgramAccount<PollAccount>[];
   const polls = accounts.map((account) => ({
-    ...((account.account as unknown) as PollAccount),
+    ...account.account,
     publicKey: account.publicKey.toBase58()
   }));
 
@@ -135,11 +137,11 @@ export async function fetchAllPolls(connection: Connection, creator?: PublicKey)
 export async function fetchVotesForPoll(connection: Connection, pollPublicKey: PublicKey | string) {
   const program = getProgram(connection);
   const key = typeof pollPublicKey === "string" ? new PublicKey(pollPublicKey) : pollPublicKey;
-  const votes = await program.account.voteRecord.all();
+  const votes = (await program.account.voteRecord.all()) as ProgramAccount<Omit<VoteAccount, "publicKey">>[];
 
   return votes
     .map((account) => ({
-      ...((account.account as unknown) as Omit<VoteAccount, "publicKey">),
+      ...account.account,
       publicKey: account.publicKey.toBase58()
     }))
     .filter((vote) => vote.poll.equals(key));

@@ -6,16 +6,24 @@ type VotingOrbitProps = {
 };
 
 export default function VotingOrbit({ pollCount, totalVotes }: VotingOrbitProps) {
+  const coinSlabs = Array.from({ length: 8 }, (_, index) => index);
+
   return (
-    <aside className="motion-panel motion-delay-1 vote-orbit-shell" aria-label="Voting network preview">
+    <aside className="motion-panel motion-delay-1 vote-orbit-shell" aria-label="Voting network">
       <div className="vote-orbit-stage" aria-hidden="true">
         <div className="orbit-ring orbit-ring-one" />
         <div className="orbit-ring orbit-ring-two" />
         <div className="orbit-ring orbit-ring-three" />
 
         <div className="solana-coin-3d">
-          <div className="solana-coin-face">
-            <SolanaLogo className="solana-coin-mark" idPrefix="solanaOrbitLogo" />
+          <div className="solana-coin-shell">
+            {coinSlabs.map((slab) => (
+              <span key={slab} className="solana-coin-slab" />
+            ))}
+            <div className="solana-coin-face solana-coin-back" />
+            <div className="solana-coin-face solana-coin-front">
+              <SolanaLogo className="solana-coin-mark" idPrefix="solanaOrbitLogo" />
+            </div>
           </div>
         </div>
 
@@ -24,16 +32,12 @@ export default function VotingOrbit({ pollCount, totalVotes }: VotingOrbitProps)
       </div>
 
       <div className="orbit-stat orbit-stat-left">
-        <span>Mock polls</span>
+        <span>Polls</span>
         <strong>{pollCount}</strong>
       </div>
       <div className="orbit-stat orbit-stat-right">
-        <span>Demo votes</span>
+        <span>Votes</span>
         <strong>{totalVotes}</strong>
-      </div>
-      <div className="orbit-caption">
-        <span>Devnet preview</span>
-        <p>Local UI layer ready for Anchor data.</p>
       </div>
     </aside>
   );

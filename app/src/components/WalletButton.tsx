@@ -148,7 +148,7 @@ function WalletButton() {
           Install Phantom
         </a>
         <p className="max-w-xs text-sm text-slate-400">
-          Phantom wallet is required for Devnet voting.
+          Phantom wallet is required for voting.
         </p>
       </div>
     );

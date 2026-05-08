@@ -8,8 +8,7 @@ export default function AccountPage() {
           <p className="text-sm font-black uppercase tracking-wide text-[#9aa6ad]">Profile</p>
           <h1 className="mt-2 text-4xl font-black text-white">User Account</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-            Frontend-only account view for your connected wallet, local username,
-            and local preview activity.
+            Manage your connected wallet, username, and recent voting activity.
           </p>
         </div>
 

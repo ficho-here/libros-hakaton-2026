@@ -329,14 +329,26 @@ input {
   animation: solana-glow 4s ease-in-out infinite;
 }
 
-.solana-coin-face {
+.solana-coin-shell {
   position: relative;
-  display: grid;
-  width: 172px;
-  height: 172px;
-  place-items: center;
-  border: 3px solid rgba(255, 255, 255, 0.22);
+  width: 178px;
+  height: 178px;
+  transform-style: preserve-3d;
+  animation: coin-spin 5.2s linear infinite;
+}
+
+.solana-coin-face,
+.solana-coin-slab {
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
+  transform-style: preserve-3d;
+}
+
+.solana-coin-face {
+  display: grid;
+  place-items: center;
+  border: 4px solid rgba(255, 255, 255, 0.22);
   background:
     radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.48), transparent 18%),
     radial-gradient(circle at 50% 52%, rgba(183, 32, 38, 0.28), transparent 48%),
@@ -346,24 +358,57 @@ input {
     inset 0 -16px 24px rgba(58, 33, 9, 0.58),
     0 22px 44px rgba(0, 0, 0, 0.36),
     0 0 36px rgba(183, 32, 38, 0.22);
-  transform-style: preserve-3d;
-  animation: coin-spin 5.2s linear infinite;
 }
 
-.solana-coin-face::before {
-  position: absolute;
-  inset: -9px;
-  z-index: -1;
-  border: 8px solid rgba(105, 65, 18, 0.82);
-  border-radius: inherit;
+.solana-coin-front {
+  transform: translateZ(6px);
+}
+
+.solana-coin-back {
+  transform: translateZ(-28px) rotateY(180deg);
+}
+
+.solana-coin-slab {
+  border: 5px solid rgba(87, 51, 12, 0.9);
   background:
-    repeating-linear-gradient(90deg, #f9dda0 0 5px, #9a651f 5px 10px),
-    linear-gradient(145deg, #805017, #f5d98a 48%, #6c4214);
+    repeating-linear-gradient(90deg, #fce19f 0 6px, #a7681c 6px 12px, #5c350d 12px 18px),
+    linear-gradient(90deg, #5f390f 0%, #f4d06a 18%, #8b5719 48%, #f8df8f 72%, #6b4012 100%);
   box-shadow:
-    inset 0 0 0 4px rgba(255, 255, 255, 0.14),
-    0 0 0 1px rgba(58, 33, 9, 0.34);
-  content: "";
+    inset 0 0 0 5px rgba(255, 255, 255, 0.08),
+    inset 16px 0 22px rgba(255, 236, 166, 0.18),
+    inset -18px 0 28px rgba(49, 27, 5, 0.5);
+}
+
+.solana-coin-slab:nth-child(1) {
+  transform: translateZ(2px);
+}
+
+.solana-coin-slab:nth-child(2) {
+  transform: translateZ(-2px);
+}
+
+.solana-coin-slab:nth-child(3) {
+  transform: translateZ(-6px);
+}
+
+.solana-coin-slab:nth-child(4) {
+  transform: translateZ(-10px);
+}
+
+.solana-coin-slab:nth-child(5) {
+  transform: translateZ(-14px);
+}
+
+.solana-coin-slab:nth-child(6) {
   transform: translateZ(-18px);
+}
+
+.solana-coin-slab:nth-child(7) {
+  transform: translateZ(-22px);
+}
+
+.solana-coin-slab:nth-child(8) {
+  transform: translateZ(-26px);
 }
 
 .solana-coin-face::after {
@@ -497,9 +542,9 @@ input {
     margin: -92px;
   }
 
-  .solana-coin-face {
-    width: 136px;
-    height: 136px;
+  .solana-coin-shell {
+    width: 140px;
+    height: 140px;
   }
 
   .solana-coin-mark {

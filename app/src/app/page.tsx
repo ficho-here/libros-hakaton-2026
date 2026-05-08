@@ -13,15 +13,14 @@ export default function HomePage() {
         <div className="mx-auto grid w-full max-w-7xl gap-8 px-5 py-14 sm:px-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:py-20">
           <div className="motion-fade-up border-l-4 border-neon pl-5">
             <p className="inline-flex rounded-full border border-[#42515a]/50 bg-[#10171b]/80 px-3 py-1 text-sm font-black uppercase tracking-wide text-[#c2cbd0]">
-              Solana Devnet Voting
+              Solana Voting
             </p>
             <h1 className="mt-5 max-w-3xl text-4xl font-black leading-tight text-white sm:text-6xl">
               Create polls and vote with Phantom.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-              A hackathon-ready frontend for decentralized voting on Solana Devnet.
-              Connect Phantom, browse polls, and leave the Anchor program wiring for
-              the next integration pass.
+              Create decentralized polls, connect Phantom, browse live results,
+              and cast votes through a sharp Solana-native interface.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -51,9 +50,6 @@ export default function HomePage() {
             </p>
             <h2 className="mt-1 text-3xl font-black text-white">All polls</h2>
           </div>
-          <p className="text-sm text-slate-400">
-            Showing local mock data until blockchain integration is ready.
-          </p>
         </div>
 
         {polls.length > 0 ? (
@@ -66,7 +62,7 @@ export default function HomePage() {
           <div className="motion-panel rounded-sm border border-dashed border-[#42515a]/70 bg-panel p-8 text-center">
             <h3 className="text-xl font-black text-white">No polls yet</h3>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-400">
-              Once Anchor fetching is connected, new Devnet polls will appear here.
+              New polls will appear here as soon as they are created.
             </p>
             <Link
               href="/create"

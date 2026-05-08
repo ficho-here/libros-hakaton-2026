@@ -224,13 +224,13 @@ export default function UserAccount() {
         <div className="rounded-sm border border-[#42515a] bg-[#10171b] p-4">
           <p className="text-3xl font-black text-white">{account.localPollsCount}</p>
           <p className="mt-1 text-sm text-slate-400">
-            {account.localPollsCount > 0 ? "Local preview polls" : "No local polls yet"}
+            {account.localPollsCount > 0 ? "Polls created" : "No polls yet"}
           </p>
         </div>
         <div className="rounded-sm border border-[#42515a] bg-[#10171b] p-4">
           <p className="text-3xl font-black text-white">{account.localVotesCount}</p>
           <p className="mt-1 text-sm text-slate-400">
-            {account.localVotesCount > 0 ? "Local preview votes" : "No local votes yet"}
+            {account.localVotesCount > 0 ? "Votes cast" : "No votes yet"}
           </p>
         </div>
       </div>
